@@ -83,18 +83,27 @@ foreach ($dataList as $data) {
     $sheet->insertNewRowBefore($currentRow, 1); // Chèn một dòng mới trước mỗi lần thêm dữ liệu
     $sheet->setCellValue("A{$currentRow}", $stt); // Số thứ tự tự động
     // $sheet->setCellValue("A{$currentRow}", $data['STT'] ?? '');
-    $sheet->setCellValue("B{$currentRow}", $data['department_name'] ?? '');
-    $sheet->setCellValue("C{$currentRow}", $data['manv'] ?? '');
-    $sheet->mergeCells("D{$currentRow}:E{$currentRow}");
-    $sheet->setCellValue("D{$currentRow}", $data['fullname'] ?? '');
+    // $sheet->setCellValue("B{$currentRow}", $data['department_name'] ?? '');
+    $sheet->setCellValue("B{$currentRow}", $data['manv'] ?? '');
+    // $sheet->mergeCells("C{$currentRow}:D{$currentRow}");
+    $sheet->setCellValue("C{$currentRow}", $data['fullname'] ?? '');
+    $sheet->setCellValue("D{$currentRow}", $dt='Công Nhân' ?? '');
+    $sheet->setCellValue("E{$currentRow}", $data['result_status'] ?? '');
     // $sheet->setCellValue("E{$currentRow}", $data['test_date'] ?? '');
     // $sheet->setCellValue("F{$currentRow}", $data['code'] ?? '');
-    $sheet->setCellValue("G{$currentRow}", $data['test_date'] ?? '');
+    // $sheet->setCellValue("G{$currentRow}", $data['test_date'] ?? '');
     // $sheet->setCellValue("H{$currentRow}", $data['total_questions'] ?? '');
-    $sheet->mergeCells("H{$currentRow}:I{$currentRow}");
-    $sheet->setCellValue("H{$currentRow}", $data['test_name'] ?? '');
-    // $sheet->setCellValue("J{$currentRow}", ($data['score'] ?? '') . '%');
-    // $sheet->setCellValue("K{$currentRow}", $data['result_status'] ?? '');
+
+    // $sheet->mergeCells("H{$currentRow}:I{$currentRow}");
+
+    $dateTime = !empty($data['test_date']) ? date("d/m/Y H:i:s", strtotime($data['test_date'])) : '';
+    $sheet->setCellValue("D2", $dateTime);
+    
+    $sheet->setCellValue("A4", 'Danh sách những nhân viên có tên dưới đây đã được đào tạo về quy trình kiểm tra ngoại quan, đo khí, đóng gói các mã hàng: ' . ($data['test_name'] ?? ''));
+
+
+    $sheet->setCellValue("F{$currentRow}", ($data['score'] ?? '') . '%');
+
     // $sheet->setCellValue("L{$currentRow}", $data['question_text'] ?? ''); 
 
     // Áp dụng định dạng từ dòng đánh dấu cho từng ô trong dòng

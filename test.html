@@ -1,100 +1,284 @@
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getCheckAnswerUser`(
-    IN day INT,
-    IN month INT,
-    IN year INT,
-    IN manv VARCHAR(50),
-    IN test_name VARCHAR(255),
-    IN department_name VARCHAR(255)  -- Thêm tham số department_name
-)
-BEGIN
-    SELECT
-        ROW_NUMBER() OVER (ORDER BY ua.manv, mt.name) AS STT,  -- Sắp xếp theo manv trước
-        ua.manv,
-        u.fullname,
-        d.name AS department_name,  -- Thêm tên phòng ban từ bảng department
-        mt.name AS test_name,
-        ua.code,  -- Thêm cột code từ bảng user_answer
-        COUNT(CASE WHEN ua.answer = 1 THEN 1 END) AS correct_answers,
-        COUNT(*) AS total_questions,
-        MAX(ua.created_at) AS test_date,
-        ROUND(COUNT(CASE WHEN ua.answer = 1 THEN 1 END) / COUNT(*) * 100) AS score,
-        CASE 
-            WHEN ROUND(COUNT(CASE WHEN ua.answer = 1 THEN 1 END) / COUNT(*) * 100) = 100 THEN 'Đạt' 
-            ELSE 'Không Đạt' 
-        END AS result_status,
-        mt.id AS test_id
-    FROM user_answer ua
-        JOIN users u ON ua.manv = u.manv
-        JOIN manage_test mt ON ua.test_id = mt.id
-        LEFT JOIN department d ON ua.department_id = d.id  -- Sửa lại join theo user_answer.department_id
-    WHERE (manv IS NULL OR ua.manv = manv)
-      AND (day IS NULL OR DAY(ua.created_at) = day)
-      AND (month IS NULL OR MONTH(ua.created_at) = month)
-      AND (year IS NULL OR YEAR(ua.created_at) = year)
-      AND (department_name IS NULL OR d.name LIKE CONCAT('%', department_name, '%'))  -- Lọc theo department_name
-      AND (test_name IS NULL OR mt.name LIKE CONCAT('%', test_name, '%'))  -- Lọc theo tên bài test
-    GROUP BY ua.manv,
-             u.fullname,
-             d.name,  -- Thêm department name vào GROUP BY
-             mt.name,
-             mt.id,
-             ua.code  -- Thêm ua.code vào GROUP BY
-    ORDER BY ua.manv ASC, mt.name;  -- Sắp xếp theo manv tăng dần
-END
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Matsuya R&D Việt Nam</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/all.min.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <style type="text/css">
+        body {
+            background: url('images/bg1.png') no-repeat center center fixed !important;
+            background-size: cover !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
+        h4 {
+            color: black;
+        }
 
+        .m-3.p-3.shadow {
+            border-radius: 6px;
+        }
 
-<span>II. Kiểm tra kích thước: </span><br> <hr>1/ Kích thước vị trí số ① ③    là:
+        .btn {
+            border-radius: 20px;
+        }
 
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-1/ Kích thước vị trí số ① ③  là :
+        .card {
+            background-color: transparent;
+        }
 
+        .footer {
+            left: 0;
+            width: 100%;
+            text-align: center;
+            background-color: #2861AD;
+            color: white;
+            padding: 1.5rem 0;
+            position: relative;
+            bottom: 0;
+            margin-top: auto; /* Đảm bảo footer nằm cuối trang */
+        }
 
-II. Kiểm tra kích thước:		
-1/ Kích thước vị trí số ① ② ③  là :		
+        .uppercase {
+            text-transform: uppercase;
+            font-weight: bold;
+        }
 
-<span>II. Kiểm tra kích thước:  </span><br> <hr>1/ Kích thước vị trí số ①  là :
-<span>I. Điều kiện hàn:</span><br> <hr>1/ Dòng điện hàn là:
-<span>IV. Xử lý hàng Huỷ và hàng Test: </span><br> <hr>1/ Khi phát sinh hàng lỗi hoặc nguyên liệu lỗi thì:
-<span>V. Xử lý sự cố bất thường:</span><br> <hr>1/ Chọn câu trả lời đúng?
+        .image {
+            width: 100px;
+            height: 140px;
+            transition: transform 0.5s ease-in-out;
+        }
 
+        .image:hover {
+            transform: scale(1.1);
+        }
 
-<span>III. Kiểm tra ngoại quan  </span><br> <hr>1/Kiểm tra ngoại quan phải chú ý những vị trí nào, hãy kể tên nhũng vị trí đó.
+        .link:hover {
+            color: #38B6FF;
+        }
 
+        .link1:hover {
+            color: green;
+        }
 
+        .link2:hover {
+            color: #3B669F;
+        }
 
+        .link3:hover {
+            color: red;
+        }
 
+        .link4:hover {
+            color: #71CDF2;
+        }
 
+        /* Ensure footer is always at the bottom */
+        .content {
+            flex: 1;
+            padding-bottom: 60px; /* Make sure there's space for the footer */
+        }
 
+        /* Footer styling */
+        .footer-info p {
+            margin: 0;
+            font-size: 14px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
 
+        .footer-info p:first-child {
+            font-size: 16px;
+            font-weight: bold;
+        }
 
-				
+        .social-links a {
+            margin-right: 15px;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
 
+        .social-links a:hover {
+            background-color: #2861AD;
+        }
 
+        .logo-footer img {
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
 
+        .logo-footer img:hover {
+            transform: scale(1.1);
+        }
 
-			
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .footer-info p {
+                font-size: 12px;
+            }
 
+            .content {
+                padding-bottom: 80px; /* Ensure more space for footer on mobile */
+            }
+        }
 
+        /* Cải thiện kiểu dáng cho menu con */
+        .submenu {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 1000;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Thêm bóng cho menu con */
+        }
 
+        .submenu.show {
+            visibility: visible;
+            opacity: 1;
+        }
 
+        .submenu-items {
+            display: flex;
+            justify-content: center; /* Căn giữa các mục */
+            flex-wrap: wrap; /* Cho phép các mục xuống dòng khi không đủ chỗ */
+            gap: 20px; /* Khoảng cách giữa các mục */
+        }
 
+        .submenu-item {
+            margin: 10px; /* Thêm khoảng cách giữa các mục */
+            text-align: center;
+        }
 
-				
+        .image-submenu {
+            width: 129px; /* Tăng kích thước logo */
+            height: auto;
+            transition: transform 0.3s ease;
+        }
 
+        .image-submenu:hover {
+            transform: scale(1.1); /* Tăng hiệu ứng phóng to khi hover */
+        }
 
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .submenu {
+                width: 90%; /* Đảm bảo menu con chiếm 90% chiều rộng trên di động */
+                padding: 15px; /* Giảm padding trên di động */
+            }
 
-INSERT INTO `questions` (`id`, `name`, `question_image`, `departmentID`, `manage_test_id`, `IsDeleted`, `IsActive`, `UpdateTime`, `DeletedTime`, `Code`) VALUES						
-('', '<span>I. Điều kiện hàn:</span><br> <hr>1/ Dòng điện hàn là:', NULL, 3, 67, 0, 1, '2024-11-07 08:28:13', NULL, NULL),
-('', '2/ Thời gian hàn là :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 05:53:46', NULL, NULL),
-('', '3/Áp lực  hơi là:', NULL, 3, 67, 0, 1, '2024-11-07 05:54:21', NULL, NULL),
-('', '4/ Thơi gian làm mát là :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 05:54:21', NULL, NULL),
-('', '5/ Nhiệt độ phòng là :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 05:55:04', NULL, NULL),
-('', '6/ Ẩm độ là :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 05:55:32', NULL, NULL),
-('', '7/ Thời gian giữ là :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 05:56:17', NULL, NULL),
-('', '8/ Nhiệt độ khuôn là :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 08:51:52', NULL, NULL),
-('', '<span>II. Kiểm tra kích thước:  </span><br> <hr>1/ Kích thước vị trí số ①  là :', NULL, 3, 67, 0, 1, '2024-11-07 08:47:32', NULL, NULL),
-('', '<span>2/ Kích thước vị trí số ② là:', NULL, 3, 67, 0, 1, '2024-11-07 08:47:19', NULL, NULL),
-('', '<span>III. Kiểm tra ngoại quan  </span><br> <hr>1/Kiểm tra ngoại quan phải chú ý những vị trí nào, hãy kể tên nhũng vị trí đó.', NULL, 3, 67, 0, 1, '2024-11-07 08:52:31', NULL, NULL),
-('', '<span>IV. Xử lý hàng Huỷ và hàng Test: </span><br> <hr>1/ Khi phát sinh hàng lỗi hoặc nguyên liệu lỗi thì:', NULL, 3, 67, 0, 1, '2024-11-07 08:52:39', NULL, NULL),
-('', '2/ Khi làm hàng Test thì :\r\n', NULL, 3, 67, 0, 1, '2024-11-07 08:34:54', NULL, NULL),
+            .image-submenu {
+                width: 80px; /* Giảm kích thước logo trên di động */
+            }
+        }
+
+    </style>
+</head>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const trainingButton = document.getElementById('training');
+    const trainingMenu = document.getElementById('trainingMenu');
+
+    trainingButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Ngăn hành vi mặc định của thẻ <a> 
+
+        // Ẩn tất cả các menu con trước
+        const allSubmenus = document.querySelectorAll('.submenu');
+        allSubmenus.forEach(function(menu) {
+            menu.classList.remove('show');
+        });
+
+        // Hiển thị hoặc ẩn menu con tương ứng
+        trainingMenu.classList.toggle('show');
+    });
+
+    // Ẩn menu khi nhấp bên ngoài menu
+    document.addEventListener('click', function(event) {
+        if (!trainingButton.contains(event.target) && !trainingMenu.contains(event.target)) {
+            trainingMenu.classList.remove('show'); // Ẩn menu nếu nhấp bên ngoài
+        }
+    });
+});
+</script>
+
+<body>
+    <div class="content">
+        <div class="text-center p-2">
+            <h1 class="uppercase">Welcome to Matsuya R&D</h1>
+        </div>
+
+        <div class="container">
+            <div class="d-flex justify-content-around flex-wrap" id="divDesktop">
+                <a class="card m-2" style="border: none" href="http://192.168.100.9:81/knowledge" target="_blank">
+                    <img class="image" src="Images/Knowledge.png" style="width: 180px;">
+                    <h4 class="mt-1 text-center uppercase link2">Kiến Thức</h4>
+                </a>
+                <a class="card m-2" style="border: none" id="training" href="#">
+                    <img class="image" src="Images/training_forms1.png" style="width: 180px;">
+                    <h4 class="mt-1 text-center uppercase link4">Đào Tạo</h4>
+
+                    <div class="submenu" id="trainingMenu">
+                        <h3 style="text-align: center; font-weight: bold;">FORM ĐÀO TẠO</h3>
+                        <div class="submenu-items">
+                            <a href="http://192.168.100.9:81/training_forms/" class="submenu-item">
+                                <img src="Images/training_forms.png" alt="Option 1" class="image-submenu">
+                                <h6 class="text-center uppercase">Training</h6>
+                            </a>
+                            <a href="http://192.168.100.9:81/armcuff/" class="submenu-item">
+                                <img src="Images/arm_cuff.png" alt="Option 2" class="image-submenu">
+                                <h6 class="text-center uppercase">ArmCuff </h6>
+                            </a>
+                            <a href="#link3" class="submenu-item">
+                                <img src="Images/caseat.png" alt="Option 3" class="image-submenu">
+                                <h6 class="text-center uppercase">Carseat</h6>
+                            </a>        
+                            <a href="#link3" class="submenu-item">
+                                <img src="Images/airbag.png" alt="Option 3" class="image-submenu">
+                                <h6 class="text-center uppercase">AirBag </h6>
+                            </a>
+                        </div>
+                    </div>
+
+                </a>
+                <a class="card m-2" style="border: none" href="http://192.168.100.6/" target="_blank">
+                    <img class="image" src="Images/cas.png" style="width: 180px;">
+                    <h4 class="mt-1 text-center uppercase link">CAS</h4>
+                </a>
+                <a class="card m-2" style="border: none" href="http://192.168.100.9:8000/login" target="_blank">
+                    <img class="image" src="Images/training_forms1.png" style="width: 180px;">
+                    <h4 class="mt-1 text-center uppercase link3">SPLIT</h4>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-info">
+            <p>Matsuya R&D Vietnam</p>
+            <p>Tax Code: 0102352354</p>
+            <p>Address: 123 Main Street, Hanoi, Vietnam</p>
+            <p>Phone: +84 123 456 789</p>
+        </div>
+    </div>
+
+</body>
+</html>
