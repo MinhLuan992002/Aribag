@@ -113,7 +113,7 @@ q.id, a.id";
     <title>Form Trắc Nghiệm</title>
 
     <link href="./css/bootstrap.min.css" rel="stylesheet">
-     <link rel="stylesheet" href="./css/lightbox.min.css">
+    <link rel="stylesheet" href="./css/lightbox.min.css">
 
 
 
@@ -122,16 +122,16 @@ q.id, a.id";
         body {
 
             background-color: #f4f8fb;
-font-family: 'Arial', 'Helvetica', 'Verdana', sans-serif;
-color: #253874;
-font-size: 20px;
+            font-family: 'Arial', 'Helvetica', 'Verdana', sans-serif;
+            color: #253874;
+            font-size: 20px;
 
         }
 
 
-.element {
-    animation: continuousTransition 9.3s ease infinite;
-}
+        .element {
+            animation: continuousTransition 9.3s ease infinite;
+        }
 
         .fieldset {
 
@@ -140,10 +140,12 @@ font-size: 20px;
             border-color: #0d6efd;
 
         }
-.bg-light {
-    --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
-}
+
+        .bg-light {
+            --bs-bg-opacity: 1;
+            background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+        }
+
         legend {
 
             font-size: 1.25rem;
@@ -197,14 +199,19 @@ font-size: 20px;
 
             <form id="testForm" action="submit_test.php" method="post">
 
-                <?php foreach ($questions as $question_id => $question_data): ?>
+                <?php
+                $index = 1; // Biến đếm để theo dõi số thứ tự câu hỏi. 
+
+                foreach ($questions as $question_id => $question_data): ?>
 
                     <fieldset class="mb-5 p-4 rounded shadow-sm border fieldset">
 
                         <legend class="fs-4 fw-bold text-dark mb-3">
-                            <?php echo $question_data['question_name']; ?>
+                            <?php echo " " . $index . ": " . htmlspecialchars($question_data['question_name']); ?>
                         </legend>
-
+                        <?php
+                        $index++; // Tăng số thứ tự câu hỏi sau mỗi lần lặp.
+                        ?>
 
                         <!-- Hiển thị hình ảnh câu hỏi, sử dụng Lightbox -->
 

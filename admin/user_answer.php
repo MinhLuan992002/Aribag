@@ -5,7 +5,30 @@ session_start();
 $main = new Main();
 $users = $main->getAllUsers();
 $department_name = $_SESSION['department'];
-$results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $test_name = '', $department_name,$code='');
+$manv = $_GET['manv'] ?? '';              // Lấy mã nhân viên từ form hoặc URL
+$day = '';                                // Ngày, nếu không dùng có thể để rỗng
+$month = '';                              // Tháng
+$year = '';                               // Năm
+$test_name = $_GET['test_name'] ?? '';    // Tên bài test từ form hoặc URL
+$department_name = $_GET['department_name'] ?? ''; // Bộ phận
+$code = '';                               // Mã nhóm
+$start_date = $_GET['start_date'] ?? '';  // Ngày bắt đầu
+$end_date = $_GET['end_date'] ?? '';      // Ngày kết thúc
+
+$results = $main->getResults(
+    $manv,
+    $day,
+    $month,
+    $year,
+    $test_name,
+    $department_name,
+    $code,
+    $start_date,
+    $end_date
+);
+
+echo ($_SESSION['department']);
+
 ?>
 <style>
     form {
@@ -43,6 +66,7 @@ $results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $te
                     <div class="card mb-4">
                         <div class="card-header pb-0">
                             <h6>Projects table</h6>
+                            <?php echo ($department_name);  ?>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2">
                             <form method="GET" action="" id="searchForm" class="mb-4 px-4">
@@ -59,7 +83,18 @@ $results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $te
                                         <label for="date" class="form-label" style="font-size: 0.875rem;">Ngày tháng</label>
                                         <input type="date" name="date" class="form-control form-control-sm" id="date" style="width: 100px;" value="<?= htmlspecialchars($_GET['date'] ?? '') ?>">
                                     </div>
+                                    <!-- Thêm các trường tìm kiếm từ ngày đến ngày -->
                                     <div class="me-2">
+                                        <label for="start_date" class="form-label" style="font-size: 0.875rem;">Từ ngày</label>
+                                        <input type="date" name="start_date" class="form-control form-control-sm" id="start_date" style="width: 100px;" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>">
+                                    </div>
+                                    <div class="me-2">
+                                        <label for="end_date" class="form-label" style="font-size: 0.875rem;">Đến ngày</label>
+                                        <input type="date" name="end_date" class="form-control form-control-sm" id="end_date" style="width: 100px;" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>">
+                                    </div>
+
+                                    <div class="me-2">
+                                        <!-- Chuyển nút thành submit để gửi form -->
                                         <button type="button" style="margin-top: 45px;" class="btn btn-success btn-sm" onclick="exportToExcel()">
                                             Xuất Excel
                                         </button>
@@ -67,10 +102,12 @@ $results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $te
                                 </div>
                             </form>
 
+
+
                             <div class="table-responsive p-0">
-                            <form action="export_excel.php" method="post">
-                                <table class="table align-items-center justify-content-center mb-0">
-                                    <!-- <thead>
+                                <form action="export_excel.php" method="post">
+                                    <table class="table align-items-center justify-content-center mb-0">
+                                        <!-- <thead>
                                         <tr>
                                             <th><input  style="margin-left: 0px;" type="checkbox" id="checkAll"></th>
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">STT</th>
@@ -83,11 +120,11 @@ $results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $te
                                             <th></th>
                                         </tr>
                                     </thead> -->
-                                    <tbody id="tbody">
+                                        <tbody id="tbody">
 
-                                    </tbody>
-                                </table>
-                                                            </form>
+                                        </tbody>
+                                    </table>
+                                </form>
                                 <!-- Modal -->
                                 <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -146,7 +183,7 @@ $results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $te
         <div class="card shadow-lg">
             <div class="card-header pb-0 pt-3 ">
                 <div class="float-start">
-                    <h5 class="mt-3 mb-0">ArmCuff Forms</h5>
+                    <h5 class="mt-3 mb-0">Airbag Forms</h5>
                     <p>See our dashboard options.</p>
                 </div>
                 <div class="float-end mt-4">
@@ -252,65 +289,65 @@ $results = $main->getResults($manv = '', $day = '', $month = '', $year = '', $te
     <script src="./assets/js/argon-dashboard.min.js?v=2.0.4"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <script>
-$(document).ready(function() {
-    // Gọi AJAX khi tải trang lần đầu để hiển thị dữ liệu mặc định
-    fetchResults();
+        $(document).ready(function() {
+            // Gọi AJAX khi tải trang lần đầu để hiển thị dữ liệu mặc định
+            fetchResults();
 
-    // Gọi AJAX khi nhập liệu vào form tìm kiếm
-    $('#searchForm input').on('input', function() {
-        fetchResults();
-    });
+            // Gọi AJAX khi nhập liệu vào form tìm kiếm
+            $('#searchForm input').on('input', function() {
+                fetchResults();
+            });
 
-    // Hàm AJAX để tải dữ liệu từ `fetch_results.php`
-    function fetchResults() {
-        const test_name = $('#test_name').val();
-        const manv = $('#manv').val();
-        const date = $('#date').val();
-        $.ajax({
-            url: 'fetch_results.php',
-            method: 'GET',
-            data: {
-                test_name,
-                manv,
-                date
-            },
-            success: function(data) {
-                $('#tbody').html(data); // Cập nhật nội dung `tbody`
+            // Hàm AJAX để tải dữ liệu từ `fetch_results.php`
+            function fetchResults() {
+                const test_name = $('#test_name').val();
+                const manv = $('#manv').val();
+                const date = $('#date').val();
+                const start_date = $('#start_date').val();
+                const end_date = $('#end_date').val();
+                $.ajax({
+                    url: 'fetch_results.php',
+                    method: 'GET',
+                    data: {
+                        test_name,
+                        manv,
+                        date,
+                        start_date,
+                        end_date
+                    },
+                    success: function(data) {
+                        $('#tbody').html(data); // Cập nhật nội dung `tbody`
+                    }
+                });
             }
         });
-    }
-});
-
-
-
     </script>
 
-<script>
-function exportToExcel() {
-    // Lấy tất cả checkbox được chọn
-    const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
-    
-    // Tạo một mảng để lưu mã code
-    const codes = [];
-    
-    // Duyệt qua các checkbox được chọn và lấy giá trị của chúng
-    checkedCheckboxes.forEach(checkbox => {
-        codes.push(checkbox.value); // Lưu mã code vào mảng
-    });
+    <script>
+        function exportToExcel() {
+            // Lấy tất cả checkbox được chọn
+            const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
 
-    // Kiểm tra xem có mã code nào được chọn không
-    if (codes.length === 0) {
-        alert('Vui lòng chọn ít nhất một bản ghi trước khi xuất Excel.');
-        return;
-    }
+            // Tạo một mảng để lưu mã code
+            const codes = [];
 
-    const url = `export_excel.php?codes=${encodeURIComponent(codes.join(','))}`;
-    
-    // Chuyển hướng tới URL để tải file Excel
-    window.location.href = url;
-}
+            // Duyệt qua các checkbox được chọn và lấy giá trị của chúng
+            checkedCheckboxes.forEach(checkbox => {
+                codes.push(checkbox.value); // Lưu mã code vào mảng
+            });
 
-</script>
+            // Kiểm tra xem có mã code nào được chọn không
+            if (codes.length === 0) {
+                alert('Vui lòng chọn ít nhất một bản ghi trước khi xuất Excel.');
+                return;
+            }
+
+            const url = `export_excel.php?codes=${encodeURIComponent(codes.join(','))}`;
+
+            // Chuyển hướng tới URL để tải file Excel
+            window.location.href = url;
+        }
+    </script>
 
 
 </body>

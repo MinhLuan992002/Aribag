@@ -4,9 +4,15 @@ session_start();
 $main = new Main();
 
 // Lấy dữ liệu từ GET
+
 $test_name = htmlspecialchars($_GET['test_name'] ?? '');
 $manv = htmlspecialchars($_GET['manv'] ?? '');
 $date = htmlspecialchars($_GET['date'] ?? '');
+$start_date = $_GET['start_date'] ?? '';  // Ngày bắt đầu
+$end_date = $_GET['end_date'] ?? '';      // Ngày kết thúc
+// echo( $_GET['start_date'] );
+// Debug để kiểm tra dữ liệu nhận từ form
+
 
 // Lấy tên bộ phận từ session
 $department_name = $_SESSION['department'];
@@ -19,18 +25,31 @@ $year = '';
 // Nếu có giá trị ngày tháng năm, chia nhỏ thành các phần
 if (!empty($date)) {
     $date_parts = explode('-', $date);
-    if (count($date_parts) === 3) {
-        // Ngày tháng theo định dạng YYYY-MM-DD
-        $year = isset($date_parts[0]) ? intval($date_parts[0]) : '';
-        $month = isset($date_parts[1]) ? intval($date_parts[1]) : '';
-        $day = isset($date_parts[2]) ? intval($date_parts[2]) : '';
+    if (!empty($date) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        $date_parts = explode('-', $date);
+        $year = intval($date_parts[0]);
+        $month = intval($date_parts[1]);
+        $day = intval($date_parts[2]);
+        echo "Ngày không hợp lệ!";
     }
 }
-
 // Gọi phương thức getResults với các tham số cần thiết
-$results = $main->getResults($manv, $day, $month, $year, $test_name, $department_name, $code = '');
+$results = $main->getResults(
+    $manv,
+    $day,
+    $month,
+    $year,
+    $test_name,
+    $department_name,
+    $code = '',
+    $start_date,
+    $end_date
+);
+
 
 ?>
+
+
 
 <tr>
     <th><input type="checkbox" id="checkAll"></th>

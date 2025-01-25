@@ -1,6 +1,7 @@
 <?php
 require '../vendor/autoload.php';
 include_once('../config/config.php');
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 // Đường dẫn đến file mẫu
@@ -26,14 +27,40 @@ if (empty($codes)) {
 // Truy vấn dữ liệu cho từng mã code và lưu tất cả vào mảng
 $dataList = [];
 foreach ($codes as $code) {
-    $stmt = $conn->prepare("CALL getCheckAnswerUser(NULL, NULL, NULL, NULL, NULL, NULL, ?)");
+    // Xóa khoảng trắng thừa trước/sau mã code
+    $code = trim($code);
+
+    // Bỏ qua nếu mã code rỗng sau khi trim
+    if (empty($code)) {
+        continue;
+    }
+
+    // Chuẩn bị câu truy vấn với đầy đủ 9 tham số
+    $stmt = $conn->prepare("CALL getCheckAnswerUser(NULL, NULL, NULL, NULL, NULL, NULL, ?, NULL, NULL)");
+
+    if (!$stmt) {
+        die("Lỗi chuẩn bị câu truy vấn: " . $conn->error);
+    }
+
+    // Gán giá trị cho tham số `code`
     $stmt->bind_param("s", $code);
+
+    // Thực thi câu truy vấn
     $stmt->execute();
+
+    // Lấy kết quả
     $result = $stmt->get_result();
 
-    while ($data = $result->fetch_assoc()) {
-        $dataList[] = $data;
+    // Kiểm tra và xử lý dữ liệu trả về
+    if ($result) {
+        while ($data = $result->fetch_assoc()) {
+            $dataList[] = $data;
+        }
+    } else {
+        echo "Không có dữ liệu cho mã code: $code<br>";
     }
+
+    // Đóng statement
     $stmt->close();
 }
 
@@ -87,7 +114,7 @@ foreach ($dataList as $data) {
     $sheet->setCellValue("B{$currentRow}", $data['manv'] ?? '');
     // $sheet->mergeCells("C{$currentRow}:D{$currentRow}");
     $sheet->setCellValue("C{$currentRow}", $data['fullname'] ?? '');
-    $sheet->setCellValue("D{$currentRow}", $dt='Công Nhân' ?? '');
+    $sheet->setCellValue("D{$currentRow}", $dt = 'Công Nhân' ?? '');
     $sheet->setCellValue("E{$currentRow}", $data['result_status'] ?? '');
     // $sheet->setCellValue("E{$currentRow}", $data['test_date'] ?? '');
     // $sheet->setCellValue("F{$currentRow}", $data['code'] ?? '');
@@ -98,11 +125,11 @@ foreach ($dataList as $data) {
 
     $dateTime = !empty($data['test_date']) ? date("d/m/Y H:i:s", strtotime($data['test_date'])) : '';
     $sheet->setCellValue("D2", $dateTime);
-    
+
     $sheet->setCellValue("A4", 'Danh sách những nhân viên có tên dưới đây đã được đào tạo về quy trình kiểm tra ngoại quan, đo khí, đóng gói các mã hàng: ' . ($data['test_name'] ?? ''));
 
 
-    $sheet->setCellValue("F{$currentRow}", ($data['score'] ?? '') . '%');
+    $sheet->setCellValue("F{$currentRow}", ($data['score'] ?? '') . '/100');
 
     // $sheet->setCellValue("L{$currentRow}", $data['question_text'] ?? ''); 
 

@@ -171,30 +171,49 @@ foreach ($questions as $question_id => $question_info) {
     }
 
     $html .= '</label>';
-              
+
     // Hiển thị hình ảnh câu hỏi nếu có
     if (!empty($question_info['question_image'])) {
-        $html .= '<img src="http://192.168.100.9:81/armcuff/admin/' . htmlspecialchars($question_info['question_image']) . '" class="image" alt="Hình ảnh câu hỏi">';
+        $html .= '<img src="http://192.168.100.9:81/airbag/admin/' . htmlspecialchars($question_info['question_image']) . '" class="image" alt="Hình ảnh câu hỏi">';
     }
 
     $html .= '<div class="options">';
-    
+    // Biến lưu trữ câu sai được chọn ngẫu nhiên
+    $randomWrongAnswer = false;
+
     foreach ($question_info['answers'] as $answer) {
-        $isUserAnswer =  ($userAnswers[$question_id] && $userAnswers[$question_id] == $answer['is_correct']) ? 'checked' : '';
-        $isCorrect = $answer['is_correct'];
+        $isUserAnswer = ''; // Biến xác định câu trả lời có được chọn hay không
 
+        // Kiểm tra nếu người dùng đã chọn câu trả lời
+        if (isset($userAnswers[$question_id])) {
+            // Nếu câu trả lời là đúng
+            if ($userAnswers[$question_id] == $answer['is_correct']) {
+                // $isUserAnswer =  ($userAnswers[$question_id] && $userAnswers[$question_id] == $answer['is_correct']) ? 'checked' : '';
+                if ($userAnswers[$question_id] && $userAnswers[$question_id] == $answer['is_correct']) {
+                    $isUserAnswer = 'checked';
+                } else {
+                    if (!$randomWrongAnswer) {
+                        $isUserAnswer = 'checked';
+                        $randomWrongAnswer = true;  // Đánh dấu là đã chọn câu sai ngẫu nhiên
+                    }
+                }
+            }
+        }
+
+        // Tạo HTML cho câu trả lời
         $html .= '<div class="option">
-                    <input type="radio"  ' . $isUserAnswer  . '  disabled/>
-                    ' . htmlspecialchars($answer['text']);
-
+                <input type="radio" ' . $isUserAnswer . ' disabled />
+                ' . htmlspecialchars($answer['text']);
 
         // Hiển thị hình ảnh câu trả lời nếu có
         if (!empty($answer['answer_image'])) {
-            $html .= '<br>  <img src="http://192.168.100.9:81/armcuff/admin/' . htmlspecialchars($answer['answer_image']) . '" class="image" alt="Hình ảnh câu trả lời">';
+            $html .= '<br>  <img src="http://192.168.100.9:81/airbag/admin/' . htmlspecialchars($answer['answer_image']) . '" class="image" alt="Hình ảnh câu trả lời">';
         }
 
         $html .= '</div>';
     }
+
+
 
     $html .= '</div>';
     $questionNumber++;
@@ -213,4 +232,3 @@ $dompdf->render();
 
 // Bước 4: Xuất file PDF
 $dompdf->stream("ket_qua_bai_kiem_tra.pdf", ["Attachment" => false]);
-?>

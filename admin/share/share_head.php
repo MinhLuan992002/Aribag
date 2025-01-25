@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="./assets/img/favicon.png">
   <title>
-    Admin Armcuff Forms
+    Admin Airbag Forms
   </title>
   <!-- Fonts and icons -->
   <link rel="stylesheet" href="../fontawesome/css/all.min.css">

@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['changePassword'])) {
               <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden" style="background-image: url('./assets/img/signin-ad.jpg');
           background-size: cover;">
                 <span class="mask bg-gradient-primary opacity-6"></span>
-                <h4 class="mt-5 text-white font-weight-bolder position-relative">"Wellcome to Armcuff Forms"</h4>
+                <h4 class="mt-5 text-white font-weight-bolder position-relative">"Wellcome to Airbag Forms"</h4>
                 <p class="text-white position-relative">This is a training management software designed to help you efficiently manage and track the learning process. </p>
               </div>
             </div>

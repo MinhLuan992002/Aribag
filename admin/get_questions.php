@@ -8,7 +8,7 @@ try {
     $test_id = $_GET['test_id'] ?? null;
 
     if ($test_id) {
-        $sql = "SELECT q.id, q.name, q.question_image, a.id AS answer_id, a.answer AS answer_text, a.correct AS is_correct
+        $sql = "SELECT q.id, q.name, q.question_image, a.id AS answer_id, a.answer AS answer_text,a.answer_image, a.correct AS is_correct
                 FROM questions q
                 LEFT JOIN answers a ON q.id = a.questions_id
                 WHERE q.manage_test_id = :test_id
@@ -26,6 +26,7 @@ try {
             $questions[$row['id']]['answers'][] = [
                 'id' => $row['answer_id'],
                 'text' => $row['answer_text'],
+                'image' => $row['answer_image'], // Thêm hình ảnh của đáp án
                 'correct' => (bool)$row['is_correct'],
             ];
         }
@@ -41,4 +42,3 @@ try {
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
 }
-?>

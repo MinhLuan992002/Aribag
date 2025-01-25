@@ -11,7 +11,9 @@ class Main
     {
         $this->db = new Database();
         $this->fm = new Format();
+        
     }
+    
 
     // Thêm phương thức lấy tất cả người dùng
     public function getAllUsers()
@@ -184,6 +186,55 @@ class Main
             return false;
         }
     }
+    public function addTestIm($testName, $departmentId) {
+        try {
+            // Kiểm tra nếu bài test đã tồn tại
+            $stmt = $this->db->prepare("SELECT id FROM manage_test WHERE name = ? AND department_id = ?");
+            $stmt->execute([$testName, $departmentId]);
+            $existingTest = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if ($existingTest) {
+                return $existingTest['id']; // Trả về ID của bài test đã tồn tại
+            }
+    
+            // Thêm bài test nếu chưa tồn tại
+            $stmt = $this->db->prepare("INSERT INTO manage_test (name, department_id) VALUES (?, ?)");
+            $stmt->execute([$testName, $departmentId]);
+    
+            if ($stmt->rowCount() > 0) {
+                return $this->db->lastInsertId(); // Trả về ID của bài test vừa thêm
+            }
+            return false; // Không thể thêm bài test
+        } catch (PDOException $e) {
+            error_log("Lỗi thêm bài test: " . $e->getMessage());
+            return false;
+        }
+    }
+    public function addDepartmentIm($departmentName) {
+        try {
+            // Kiểm tra nếu bộ phận đã tồn tại
+            $stmt = $this->db->prepare("SELECT id FROM department WHERE name = ?");
+            $stmt->execute([$departmentName]);
+            $existingDepartment = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if ($existingDepartment) {
+                return $existingDepartment['id']; // Trả về ID của bộ phận đã tồn tại
+            }
+    
+            // Thêm bộ phận nếu chưa tồn tại
+            $stmt = $this->db->prepare("INSERT INTO department (name) VALUES (?)");
+            $stmt->execute([$departmentName]);
+    
+            if ($stmt->rowCount() > 0) {
+                return $this->db->lastInsertId(); // Trả về ID của bộ phận vừa thêm
+            }
+            return false; // Không thể thêm bộ phận
+        } catch (PDOException $e) {
+            error_log("Lỗi thêm bộ phận: " . $e->getMessage());
+            return false;
+        }
+    }
+        
     
     
     public function checkExistingQuestion($manageTestId, $departmentId, $questionText) {
@@ -264,16 +315,15 @@ class Main
     }
     
 
-    public function getResults($manv = '', $day = '', $month = '', $year = '', $test_name = '',$department_name='', $code='')
+    public function getResults($manv = '', $day = '', $month = '', $year = '', $test_name = '', $department_name = '', $code = '', $start_date = '', $end_date = '')
     {
         // Gọi stored procedure thay cho việc viết SQL phức tạp
-        $sql = "CALL armcuff.getCheckAnswerUser(:day,:month, :year, :manv,:test_name,:department_name,:code)";
-
+        $sql = "CALL airbag.getCheckAnswerUser(:day, :month, :year, :manv, :test_name, :department_name, :code, :start_date, :end_date)";
+    
         // Chuẩn bị câu truy vấn
         $stmt = $this->db->prepare($sql);
-
+    
         // Gán giá trị cho các tham số tìm kiếm
-        // Nếu tham số trống thì đặt giá trị NULL
         $stmt->bindValue(':manv', $manv === '' ? null : $manv, PDO::PARAM_STR);
         $stmt->bindValue(':day', $day === '' ? null : $day, PDO::PARAM_INT);
         $stmt->bindValue(':month', $month === '' ? null : $month, PDO::PARAM_INT);
@@ -281,12 +331,17 @@ class Main
         $stmt->bindValue(':test_name', $test_name === '' ? null : $test_name, PDO::PARAM_STR);
         $stmt->bindValue(':department_name', $department_name === '' ? null : $department_name, PDO::PARAM_STR);
         $stmt->bindValue(':code', $code === '' ? null : $code, PDO::PARAM_STR);
+        $stmt->bindValue(':start_date', $start_date === '' ? null : $start_date, PDO::PARAM_STR);
+        $stmt->bindValue(':end_date', $end_date === '' ? null : $end_date, PDO::PARAM_STR);
+    
         // Thực thi câu truy vấn
         $stmt->execute();
-
+    
         // Trả về kết quả
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    
 
     // Phương thức cập nhật thông tin người dùng
     public function updateUser($manv, $fullname, $username, $password, $isActive)

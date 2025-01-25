@@ -35,7 +35,9 @@ class Database {
     public function execute($stmt) {
         return $stmt->execute();
     }
-
+    public function lastInsertId() {
+        return $this->pdo->lastInsertId();
+    }
     public function insert($query) {
         $stmt = $this->pdo->prepare($query);
         return $stmt->execute();

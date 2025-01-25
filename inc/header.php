@@ -37,12 +37,13 @@ $_SESSION['LAST_ACTIVITY'] = time();
 <!doctype html>
 <html>
 <head>
-  <title>Armcuff Forms</title>
+  <title>Airbag Forms</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <link rel="shortcut icon" href="/img/logo_company.png" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="76x76" href="./admin/assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="./admin/assets/img/favicon.png">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <script src="js/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <link href='font/css.css' rel='stylesheet'>
@@ -56,7 +57,7 @@ $_SESSION['LAST_ACTIVITY'] = time();
 <nav class="navbar navbar-dark bg-dark ">
       <div class="navbar-left">
          <img src="./img/logo_company.png" alt="Logo" class="img-fluid mb-1">
-         <a style="color: white;" class="navbar-brand" href="#">Armcuff Forms</a>
+         <a style="color: white;" class="navbar-brand" href="#">Airbag Forms</a>
       </div>
       <?php if (isset($_SESSION['displayName'])): ?>
       <div class="navbar">
@@ -79,7 +80,7 @@ $_SESSION['LAST_ACTIVITY'] = time();
 
                <li class="dropdown__item">
                   <i class="ri-lock-line dropdown__icon"></i>
-                  <span class="dropdown__name"><a style="text-decoration: none; color: black;" href="/armcuff/admin">Admin</a></span>
+                  <span class="dropdown__name"><a style="text-decoration: none; color: black;" href="/airbag/admin">Admin</a></span>
                </li>
                <hr>
                <li class="dropdown__item">

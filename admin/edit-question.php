@@ -4,7 +4,6 @@
 try {
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $sqlManageTests = "
     SELECT mt.id, mt.name, d.name as department_name
     FROM manage_test mt
@@ -16,7 +15,6 @@ try {
     die("Lỗi kết nối: " . $e->getMessage());
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -53,8 +51,6 @@ try {
         echo '</div></div>';
         ?>
     </div>
-
-    <!-- Form chỉnh sửa câu hỏi -->
     <div id="questions-container" class="mt-4" style="display: none;">
         <h3>Chỉnh sửa câu hỏi</h3>
         <form id="questions-form">
@@ -63,7 +59,6 @@ try {
         </form>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 // Hàm hiển thị danh sách câu hỏi của một bài kiểm tra
@@ -131,7 +126,6 @@ function saveAllQuestions() {
         }
     }, 'json');
 }
-
 // Mở và đóng danh sách câu hỏi theo từng bộ phận
 function toggleTests(departmentName) {
     var testList = document.getElementById(departmentName);
@@ -221,8 +215,6 @@ function saveAllQuestions() {
         }
     });
 }
-
-
 </script>
 </body>
 </html>

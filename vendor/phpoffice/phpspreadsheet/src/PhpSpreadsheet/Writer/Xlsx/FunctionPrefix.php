@@ -130,7 +130,6 @@ class FunctionPrefix
         . '|ifs'
         . '|maxifs'
         . '|minifs'
-        . '|sumifs'
         . '|textjoin'
         // functions added with Excel 365
         . '|anchorarray'
@@ -143,6 +142,7 @@ class FunctionPrefix
         . '|drop'
         . '|expand'
         . '|filter'
+        . '|groupby'
         . '|hstack'
         . '|isomitted'
         . '|lambda'

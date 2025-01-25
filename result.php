@@ -85,7 +85,9 @@ $manageTests = $exam->getManageTests();
         </tr>
         <tr>
             <th>Số câu trả lời đúng:</th>
-            <td style="color:green"><?php echo htmlspecialchars($correct_answers); ?></td>
+            <td style="color:green">
+            <?php echo htmlspecialchars($correct_answers) . " / " . htmlspecialchars($total_questions); ?>
+        </td>
         </tr>
     </table>
     <a class="btn-home" href="index.php">Trở về trang chính</a>

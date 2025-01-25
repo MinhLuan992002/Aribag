@@ -98,7 +98,7 @@ $pdo = null;
 <body>
     <div class="container">
         <div class="text-center mb-4">
-            <h1>Armcuff Forms</h1>
+            <h1>Airbag Forms</h1>
             <img src="img/bgtest.png" alt="Logo" class="img-fluid mb-4" style="max-width: 150px;">
         </div>
 

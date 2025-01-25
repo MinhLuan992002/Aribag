@@ -32,7 +32,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 <!doctype html>
 <html>
 <head>
-	<title>Armcuff Forms</title>
+	<title>Airbag Forms</title>
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -50,7 +50,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div style="margin-left: 219px;">
     <img style="max-width: 65px;" src="./img/logo_company.png" alt="Logo" class="img-fluid mb-1">
-    <a class="navbar-brand" href="" style="font-family: 'Kaushan Script', cursive; font-size: 34px;line-height: 1em; margin-left: 20px;">Armcuff Forms</a>
+    <a class="navbar-brand" href="" style="font-family: 'Kaushan Script', cursive; font-size: 34px;line-height: 1em; margin-left: 20px;">Airbag Forms</a>
         
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

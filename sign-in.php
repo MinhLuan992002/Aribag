@@ -65,7 +65,7 @@
 </style>
 
 <div style="margin-top: 29px;" class="text-center mb-4">
-    <h1 class="display-4" style="font-family: 'Kaushan Script', cursive;">Armcuff Forms</h1>
+    <h1 class="display-4" style="font-family: 'Kaushan Script', cursive;">Airbag Forms</h1>
     <p class="lead">Welcome to the Training Management System</p>
 </div>
 

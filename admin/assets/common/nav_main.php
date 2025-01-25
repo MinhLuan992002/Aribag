@@ -23,7 +23,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="margin-top: -9px;">
                         <li><a class="dropdown-item" href="index.php">Home</a></li>
                         <hr style="background-color: gray;">
-<li><a class="dropdown-item" href="/armcuff/">User</a></li>
+<li><a class="dropdown-item" href="/airbag/">User</a></li>
 
 
                         <hr style="background-color: gray;">

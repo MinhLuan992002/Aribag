@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php'; // adjust as per the file structure
+require __DIR__ . '/../vendor/autoload.php'; // điều chỉnh đường dẫn tương ứng với cấu trúc file của bạn
 $filepath = realpath(dirname(__FILE__));
 include_once realpath(dirname(__FILE__) . '/../classes/Main.php');
 $main = new Main();
@@ -13,68 +13,75 @@ $errorMessage = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['import-file'])) {
     $file = $_FILES['import-file'];
 
-    // Kiểm tra xem tệp có được tải lên thành công không
     if ($file['error'] === 0) {
-        $filePath = $file['tmp_name']; // Đường dẫn tạm của file được upload
+        $filePath = $file['tmp_name'];
 
         try {
             // Đọc file Excel
             $spreadsheet = IOFactory::load($filePath);
             $sheet = $spreadsheet->getActiveSheet();
             $data = $sheet->toArray();
+            $data = array_slice($data, 2); // Bỏ qua hàng đầu tiên (tiêu đề)
 
-            // Bắt đầu xử lý từng dòng dữ liệu từ file Excel
+            // Duyệt qua từng dòng dữ liệu
             foreach ($data as $rowIndex => $row) {
-                // Bỏ qua hàng tiêu đề nếu cần
-                if ($rowIndex == 0) {
-                    continue; // Bỏ qua hàng tiêu đề
+                $testName = isset($row[0]) ? $row[0] : '';
+                $departmentName = isset($row[1]) ? $row[1] : '';
+                $questionText = isset($row[2]) ? $row[2] : '';
+                $correctAnswer = isset($row[3]) ? $row[3] : null;
+                $correctAnswerFlag = isset($row[4]) ? (int)$row[4] : 0; // Kiểm tra cột đáp án đúng (1 = đúng, 0 = sai)
+
+                // Kiểm tra dữ liệu bắt buộc
+                if (empty($testName) || empty($departmentName) || empty($questionText)) {
+                    $errorMessage .= "Hàng " . ($rowIndex + 1) . " có dữ liệu thiếu. ";
+                    continue;
                 }
-            
-                // Lấy dữ liệu từ từng cột
-                $testName = $row[0] ?? null; // Tên bài kiểm tra
-                $departmentName = $row[1] ?? null; // Tên phòng ban
-                $questionText = $row[2] ?? null; // Câu hỏi
-                $correctAnswer = $row[3] ?? null; // Đáp án
-                $isCorrect = (int)($row[4] ?? 0); // Đáp án đúng (1 hoặc 0)
-            
-                if ($testName && $departmentName && $questionText && $correctAnswer !== null) {
-                    // Lấy ID bài kiểm tra và phòng ban dựa trên tên
-                    $manageTestId = $main->getManageImp($testName); // Lấy ID bài kiểm tra từ tên
-                    $departmentId = $main->getDepartmentImp($departmentName); // Lấy ID phòng ban từ tên
-            
-                    if ($manageTestId && $departmentId) {
-                        // Kiểm tra xem câu hỏi đã tồn tại hay chưa
-                        $questionId = $main->checkExistingQuestion($manageTestId, $departmentId, $questionText);
-            
-                        if (!$questionId) {
-                            // Nếu câu hỏi chưa tồn tại, thêm mới
-                            $questionId = $main->impQuestion($manageTestId, $departmentId, $questionText, null);
-                        }
-            
-                        if ($questionId) {
-                            // Thêm đáp án (bao gồm cả việc lưu đáp án đúng/sai)
-                            $result = $main->addAll($questionId, [
-                                'text' => $correctAnswer,
-                                'image' => null,
-                                'correct' => $isCorrect // Lưu giá trị 1 hoặc 0
-                            ]);
-            
-                            if ($result) {
-                                $successMessage .= "Thêm đáp án thành công cho câu hỏi tại hàng: " . ($rowIndex + 1) . ". ";
-                            } else {
-                                $errorMessage .= "Không thể thêm đáp án cho câu hỏi tại hàng: " . ($rowIndex + 1) . ". ";
-                            }
-                        } else {
-                            $errorMessage .= "Không thể thêm câu hỏi tại hàng: " . ($rowIndex + 1) . ". ";
-                        }
+
+                // Kiểm tra và thêm bộ phận nếu chưa tồn tại
+                $departmentId = $main->getDepartmentImp($departmentName);
+                if (!$departmentId) {
+                    $departmentId = $main->addDepartmentIm($departmentName);
+                    if (!$departmentId) {
+                        $errorMessage .= "Không thể thêm bộ phận: $departmentName tại hàng " . ($rowIndex + 1) . ". ";
+                        continue;
+                    }
+                }
+
+                // Kiểm tra và thêm bài test nếu chưa tồn tại
+                $manageTestId = $main->getManageImp($testName);
+                if (!$manageTestId) {
+                    $manageTestId = $main->addTestIm($testName, $departmentId);
+                    if (!$manageTestId) {
+                        $errorMessage .= "Không thể thêm bài test: $testName tại hàng " . ($rowIndex + 1) . ". ";
+                        continue;
+                    }
+                }
+
+                // Xử lý câu hỏi và đáp án
+                $questionId = $main->checkExistingQuestion($manageTestId, $departmentId, $questionText);
+                if (!$questionId) {
+                    $questionId = $main->impQuestion($manageTestId, $departmentId, $questionText, null);
+                }
+
+                if ($questionId) {
+                    // Gán đúng/sai cho đáp án dựa trên giá trị cột correctAnswerFlag
+                    $result = $main->addAll($questionId, [
+                        'text' => $correctAnswer,
+                        'image' => null,
+                        'correct' => $correctAnswerFlag === 1, // Nếu correctAnswerFlag = 1 thì đúng, còn lại là sai
+                    ]);
+
+                    if ($result) {
+                        $successMessage .= "Thêm đáp án thành công tại hàng: " . ($rowIndex + 1) . ". ";
                     } else {
-                        $errorMessage .= "Không tìm thấy bài kiểm tra hoặc phòng ban tại hàng: " . ($rowIndex + 1) . ". ";
+                        $errorMessage .= "Không thể thêm đáp án tại hàng: " . ($rowIndex + 1) . ". ";
                     }
                 } else {
-                    $errorMessage .= "Dữ liệu không hợp lệ tại hàng: " . ($rowIndex + 1) . ". ";
+                    $errorMessage .= "Không thể thêm câu hỏi tại hàng " . ($rowIndex + 1) . ". ";
                 }
             }
-            
+
+            // Kiểm tra kết quả
             if (empty($errorMessage)) {
                 $successMessage = "Import dữ liệu thành công!";
             }
@@ -85,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['import-file'])) {
         $errorMessage = "Có lỗi khi tải lên tệp.";
     }
 }
+
 ?>
 
 <!DOCTYPE html>

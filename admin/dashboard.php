@@ -221,7 +221,7 @@ $conn->close();
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Passed and Failed</p>
-                    <h5 class="font-weight-bolder">Passed: <?php echo $currentData['passedCount']; ?>, Failed : <?php echo $currentData['failedCount']; ?></h5>
+                    <h5 class="font-weight-bolder">Pass: <?php echo $currentData['passedCount']; ?>, Fail: <?php echo $currentData['failedCount']; ?></h5>
                     <p class="mb-0">
                       <span class="<?php echo ($passFailPercentage >= 0) ? 'text-success' : 'text-danger'; ?> text-sm font-weight-bolder">
                         <?php echo ($passFailPercentage >= 0 ? '+' : '') . $passFailPercentage; ?>%
@@ -336,7 +336,7 @@ $conn->close();
                     <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
                       <i class="ni ni-camera-compact text-dark opacity-10"></i>
                     </div>
-                    <h5 class="text-white mb-1">Get started with ArmCuff Forms</h5>
+                    <h5 class="text-white mb-1">Get started with Airbag Forms</h5>
                     <p>You can easily manage all the tests of your department.</p>
                   </div>
                 </div>
@@ -366,7 +366,7 @@ $conn->close();
                     <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
                       <i class="ni ni-trophy text-dark opacity-10"></i>
                     </div>
-                    <h5 class="text-white mb-1">Welcome to armcuff Forms!</h5>
+                    <h5 class="text-white mb-1">Welcome to Airbag Forms!</h5>
                     <p>Have a nice day!</p>
                   </div>
                 </div>
@@ -500,7 +500,7 @@ $conn->close();
     <div class="card shadow-lg">
       <div class="card-header pb-0 pt-3 ">
         <div class="float-start">
-          <h5 class="mt-3 mb-0">ArmCuff Form</h5>
+          <h5 class="mt-3 mb-0">Airbag Forms</h5>
           <p>See our dashboard options.</p>
         </div>
         <div class="float-end mt-4">

@@ -12,6 +12,6 @@ if (!defined('DB_PASS')) {
 }
 
 if (!defined('DB_NAME')) {
-    define("DB_NAME", "armcuff");
+    define("DB_NAME", "airbag");
 }
 ?>

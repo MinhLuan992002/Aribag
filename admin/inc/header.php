@@ -53,7 +53,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top navbar-custom">
     <div class="container">
         <img style="max-width: 65px;" src="../img/logo_company.png" alt="Logo" class="img-fluid mb-1">
-        <a class="navbar-brand" href="">Armcuff Forms</a>
+        <a class="navbar-brand" href="">Airbag Forms</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

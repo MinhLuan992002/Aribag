@@ -101,6 +101,10 @@ try {
         }
     }
 
+// Tính tổng số câu hỏi
+$total_questions = count($user_answers);
+
+
     // Lấy tên bài kiểm tra từ bảng manage_test
     $sql = "SELECT name FROM manage_test WHERE id = ?";
     $stmt = $pdo->prepare($sql);
